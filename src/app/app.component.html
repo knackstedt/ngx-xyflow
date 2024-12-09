@@ -1,0 +1,66 @@
+<ngx-xyflow
+    [nodes]="nodes"
+    [edges]="edges"
+>
+    <ngx-xyflow-background
+        color="pink"
+        [gap]="20"
+        [size]="2"
+    />
+
+    <ngx-xyflow-controls
+        (onFitView)="test('onFitView')"
+        (onInteractiveChange)="test('onInteractiveChange ' + $event)"
+        (onZoomIn)="test('onZoomIn')"
+        (onZoomOut)="test('onZoomOut')"
+    />
+
+    <ngx-xyflow-minimap
+        (onClick)="test('onMinimapClick')"
+        (onNodeClick)="test('onMinimapNodeClick')"
+    />
+
+    <ngx-xyflow-node
+        nodeType="selectorNode"
+        (contextmenu)="test('customNodeClick')"
+    >
+
+        <!-- <ngx-xyflow-node-resizer
+            [minWidth]="100"
+            [minHeight]="50"
+        /> -->
+
+        <!-- <ngx-xyflow-node-toolbar
+            [isVisible]="true"
+            position="left"
+        >
+            <button>cut</button>
+            <button>copy</button>
+            <button>paste</button>
+        </ngx-xyflow-node-toolbar> -->
+
+        <ng-template let-data>
+            <div class="custom_node" >
+                {{data.label}}
+            </div>
+        </ng-template>
+
+        <ngx-xyflow-handle
+            type="target"
+            position="left"
+            [isConnectable]="true"
+        />
+
+        <ngx-xyflow-handle
+            type="source"
+            position="right"
+            id="a"
+        />
+
+        <ngx-xyflow-handle
+            type="source"
+            position="right"
+            id="b"
+        />
+    </ngx-xyflow-node>
+</ngx-xyflow>
