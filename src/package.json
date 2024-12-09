@@ -1,0 +1,36 @@
+{
+    "name": "ngx-xyflow",
+    "version": "0.0.1",
+    "repository": {
+        "url": "https://github.com/knackstedt/ngx-xyflow"
+    },
+    "license": "MIT",
+    "author": {
+        "email": "andrewk@vivaldi.net",
+        "name": "Andrew G. Knackstedt"
+    },
+    "description": "Angular wrapper for the popular xyflow (formerly Reactflow) library",
+    "keywords": [
+        "angular",
+        "ngx",
+        "reactflow",
+        "xyflow",
+        "react-wrapper",
+        "ng",
+        "angular-service"
+    ],
+    "peerDependencies": {
+        "@angular/common": ">=17.0.0",
+        "@angular/core": ">=17.0.0"
+    },
+    "dependencies": {
+        "react": ">=18.0.0",
+        "react-dom": ">=18.0.0",
+        "tslib": ">=2.6.0"
+    },
+    "devDependencies": {
+        "@types/react": ">=18.0.0",
+        "@types/react-dom": ">=18.0.0"
+    },
+    "sideEffects": false
+}
