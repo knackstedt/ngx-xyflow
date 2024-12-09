@@ -1,0 +1,36 @@
+{
+  "name": "ngx-xyflow",
+  "version": "0.0.0",
+  "repository": {
+    "url": "https://github.com/knackstedt/ngx-xyflow.git"
+  },
+  "scripts": {
+    "build": "ng build --project package",
+    "dev": "ng serve --project devel --port 4400 --ssl",
+    "dev:package": "ng build --project package --watch --configuration development"
+  },
+  "private": false,
+  "dependencies": {
+    "@angular/common": "^17.1.2",
+    "@angular/compiler": "^17.1.2",
+    "@angular/core": "^17.1.2",
+    "@angular/platform-browser": "^17.1.2",
+    "@angular/platform-browser-dynamic": "^17.1.2",
+    "@dotglitch/ngx-common": "^1.1.51",
+    "@xyflow/react": "^12.3.5",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "rxjs": "~7.8.1",
+    "tslib": "^2.6.2",
+    "zone.js": "~0.14.3"
+  },
+  "devDependencies": {
+    "@angular-devkit/build-angular": "^17.1.2",
+    "@angular/cli": "~17.1.2",
+    "@angular/compiler-cli": "^17.1.2",
+    "@types/react": "^18.2.48",
+    "@types/react-dom": "^18.2.18",
+    "ng-packagr": "^17.1.2",
+    "typescript": "~5.3.3"
+  }
+}
