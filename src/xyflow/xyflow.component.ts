@@ -1,5 +1,5 @@
 import { Component, ContentChild, EventEmitter, Input, NgZone, Output, ViewContainerRef, ViewEncapsulation } from '@angular/core';
-import { ReactMagicWrapperComponent, ThemeService } from '@dotglitch/ngx-common';
+import { ReactifyNgComponent } from 'ngx-reactify';
 import {
     Background,
     Controls,
@@ -22,7 +22,7 @@ type XYFlowProps = ReactFlowProps<any, any>;
     styleUrls: ['../../node_modules/@xyflow/react/dist/style.css'],
     encapsulation: ViewEncapsulation.None
 })
-export class XYFlowComponent extends ReactMagicWrapperComponent {
+export class XYFlowComponent extends ReactifyNgComponent {
 
     @Input() nodes: XYFlowProps['nodes'];
     @Input() edges: XYFlowProps['edges'];
@@ -182,10 +182,9 @@ export class XYFlowComponent extends ReactMagicWrapperComponent {
 
     constructor(
         ngContainer: ViewContainerRef,
-        ngTheme: ThemeService,
         ngZone: NgZone
     ) {
-        super(ngContainer, ngTheme, ngZone);
+        super(ngContainer, ngZone);
     }
 
     override ngOnInit() {

@@ -1,6 +1,6 @@
 import { NgTemplateOutlet } from '@angular/common';
 import { ApplicationRef, Component, ContentChild, ContentChildren, Directive, ElementRef, EventEmitter, Injector, Input, NgZone, Output, QueryList, TemplateRef, ViewChildren } from '@angular/core';
-import { ReactMagicWrapperComponent } from '@dotglitch/ngx-common';
+import { ReactifyNgComponent, ReactifyReactComponent } from 'ngx-reactify';
 import { Handle, NodeResizer, NodeToolbar } from '@xyflow/react';
 import * as React from 'react';
 import { HandleDirective } from './handle.directive';
@@ -119,7 +119,7 @@ export class NodeDirective {
             return props;
         }
 
-        this.xyflow.nodeTypes[this.nodeType] = ReactMagicWrapperComponent.WrapAngularComponent({
+        this.xyflow.nodeTypes[this.nodeType] = ReactifyReactComponent({
             component: ReactflowNodeComponent,
             appRef: this.appRef,
             injector: this.injector,
