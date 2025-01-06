@@ -13,8 +13,9 @@ import { BackgroundDirective } from './background.directive';
 import { ControlsDirective } from './controls.directive';
 import { MinimapDirective } from './minimap.directive';
 
-
 type XYFlowProps = ReactFlowProps<any, any>;
+type OverriddenProps = 'onBeforeDelete' | 'onClickConnectEnd' | 'onClickConnectStart' | 'onConnect' | 'onConnectEnd' | 'onConnectStart' | 'onDelete' | 'onEdgeClick' | 'onEdgeContextMenu' | 'onEdgeDoubleClick' | 'onEdgeMouseEnter' | 'onEdgeMouseLeave' | 'onEdgeMouseMove' | 'onEdgesChange' | 'onEdgesDelete' | 'onError' | 'onInit' | 'onMove' | 'onMoveEnd' | 'onMoveStart' | 'onNodeClick' | 'onNodeContextMenu' | 'onNodeDoubleClick' | 'onNodeDrag' | 'onNodeDragStart' | 'onNodeDragStop' | 'onNodeMouseEnter' | 'onNodeMouseLeave' | 'onNodeMouseMove' | 'onNodesChange' | 'onNodesDelete' | 'onPaneClick' | 'onPaneContextMenu' | 'onPaneMouseEnter' | 'onPaneMouseLeave' | 'onPaneMouseMove' | 'onPaneScroll' | 'onReconnect' | 'onReconnectStart' | 'onReconnectEnd' | 'onSelectionChange' | 'onSelectionContextMenu' | 'onSelectionDrag' | 'onSelectionDragStart' | 'onSelectionDragStop' | 'onSelectionEnd' | 'onSelectionStart';
+type InheritedXYFlowProps = Omit<XYFlowProps, OverriddenProps>;
 
 @Component({
     selector: 'ngx-xyflow',
@@ -22,7 +23,7 @@ type XYFlowProps = ReactFlowProps<any, any>;
     styleUrls: ['../../node_modules/@xyflow/react/dist/style.css'],
     encapsulation: ViewEncapsulation.None
 })
-export class XYFlowComponent extends ReactifyNgComponent {
+export class XYFlowComponent extends ReactifyNgComponent implements XYFlowProps {
 
     @Input() nodes: XYFlowProps['nodes'];
     @Input() edges: XYFlowProps['edges'];
@@ -82,55 +83,56 @@ export class XYFlowComponent extends ReactifyNgComponent {
     @Input() autoPanOnConnect: XYFlowProps['autoPanOnConnect'];
     @Input() connectionRadius: XYFlowProps['connectionRadius'];
 
-    @Output() onBeforeDelete = new EventEmitter<[XYFlowProps['onBeforeDelete']]>
-    @Output() onClickConnectEnd = new EventEmitter<[XYFlowProps['onClickConnectEnd']]>
-    @Output() onClickConnectStart = new EventEmitter<[XYFlowProps['onClickConnectStart']]>
-    @Output() onConnect = new EventEmitter<[XYFlowProps['onConnect']]>
-    @Output() onConnectEnd = new EventEmitter<[XYFlowProps['onConnectEnd']]>
-    @Output() onConnectStart = new EventEmitter<[XYFlowProps['onConnectStart']]>
-    @Output() onDelete = new EventEmitter<[XYFlowProps['onDelete']]>
-    @Output() onEdgeClick = new EventEmitter<[XYFlowProps['onEdgeClick']]>
-    @Output() onEdgeContextMenu = new EventEmitter<[XYFlowProps['onEdgeContextMenu']]>
-    @Output() onEdgeDoubleClick = new EventEmitter<[XYFlowProps['onEdgeDoubleClick']]>
-    @Output() onEdgeMouseEnter = new EventEmitter<[XYFlowProps['onEdgeMouseEnter']]>
-    @Output() onEdgeMouseLeave = new EventEmitter<[XYFlowProps['onEdgeMouseLeave']]>
-    @Output() onEdgeMouseMove = new EventEmitter<[XYFlowProps['onEdgeMouseMove']]>
-    @Output() onEdgesChange = new EventEmitter<[XYFlowProps['onEdgesChange']]>
-    @Output() onEdgesDelete = new EventEmitter<[XYFlowProps['onEdgesDelete']]>
-    @Output() onError = new EventEmitter<[XYFlowProps['onError']]>
-    @Output() onInit = new EventEmitter<[XYFlowProps['onInit']]>
-    @Output() onMove = new EventEmitter<[XYFlowProps['onMove']]>
-    @Output() onMoveEnd = new EventEmitter<[XYFlowProps['onMoveEnd']]>
-    @Output() onMoveStart = new EventEmitter<[XYFlowProps['onMoveStart']]>
-    @Output() onNodeClick = new EventEmitter<[XYFlowProps['onNodeClick']]>
-    @Output() onNodeContextMenu = new EventEmitter<[XYFlowProps['onNodeContextMenu']]>
-    @Output() onNodeDoubleClick = new EventEmitter<[XYFlowProps['onNodeDoubleClick']]>
-    @Output() onNodeDrag = new EventEmitter<[XYFlowProps['onNodeDrag']]>
-    @Output() onNodeDragStart = new EventEmitter<[XYFlowProps['onNodeDragStart']]>
-    @Output() onNodeDragStop = new EventEmitter<[XYFlowProps['onNodeDragStop']]>
-    @Output() onNodeMouseEnter = new EventEmitter<[XYFlowProps['onNodeMouseEnter']]>
-    @Output() onNodeMouseLeave = new EventEmitter<[XYFlowProps['onNodeMouseLeave']]>
-    @Output() onNodeMouseMove = new EventEmitter<[XYFlowProps['onNodeMouseMove']]>
-    @Output() onNodesChange = new EventEmitter<[XYFlowProps['onNodesChange']]>
-    @Output() onNodesDelete = new EventEmitter<[XYFlowProps['onNodesDelete']]>
-    @Output() onPaneClick = new EventEmitter<[XYFlowProps['onPaneClick']]>
-    @Output() onPaneContextMenu = new EventEmitter<[XYFlowProps['onPaneContextMenu']]>
-    @Output() onPaneMouseEnter = new EventEmitter<[XYFlowProps['onPaneMouseEnter']]>
-    @Output() onPaneMouseLeave = new EventEmitter<[XYFlowProps['onPaneMouseLeave']]>
-    @Output() onPaneMouseMove = new EventEmitter<[XYFlowProps['onPaneMouseMove']]>
-    @Output() onPaneScroll = new EventEmitter<[XYFlowProps['onPaneScroll']]>
+    // `as any` casting for the Output properties to inherit the description from the xyflow JSDOC comments.
+    // As of now I don't know of a better way to replace the types while keeping the comments.
 
-    @Output() onReconnect = new EventEmitter<[XYFlowProps['onReconnect']]>
-    @Output() onReconnectStart = new EventEmitter<[XYFlowProps['onReconnectStart']]>
-    @Output() onReconnectEnd = new EventEmitter<[XYFlowProps['onReconnectEnd']]>
-
-    @Output() onSelectionChange = new EventEmitter<[XYFlowProps['onSelectionChange']]>
-    @Output() onSelectionContextMenu = new EventEmitter<[XYFlowProps['onSelectionContextMenu']]>
-    @Output() onSelectionDrag = new EventEmitter<[XYFlowProps['onSelectionDrag']]>
-    @Output() onSelectionDragStart = new EventEmitter<[XYFlowProps['onSelectionDragStart']]>
-    @Output() onSelectionDragStop = new EventEmitter<[XYFlowProps['onSelectionDragStop']]>
-    @Output() onSelectionEnd = new EventEmitter<[XYFlowProps['onSelectionEnd']]>
-    @Output() onSelectionStart = new EventEmitter<[XYFlowProps['onSelectionStart']]>
+    @Output() onBeforeDelete = new EventEmitter<[XYFlowProps['onBeforeDelete']]> as any;
+    @Output() onClickConnectEnd = new EventEmitter<[XYFlowProps['onClickConnectEnd']]> as any;
+    @Output() onClickConnectStart = new EventEmitter<[XYFlowProps['onClickConnectStart']]> as any;
+    @Output() onConnect = new EventEmitter<[XYFlowProps['onConnect']]> as any;
+    @Output() onConnectEnd = new EventEmitter<[XYFlowProps['onConnectEnd']]> as any;
+    @Output() onConnectStart = new EventEmitter<[XYFlowProps['onConnectStart']]> as any;
+    @Output() onDelete = new EventEmitter<[XYFlowProps['onDelete']]> as any;
+    @Output() onEdgeClick = new EventEmitter<[XYFlowProps['onEdgeClick']]> as any;
+    @Output() onEdgeContextMenu = new EventEmitter<[XYFlowProps['onEdgeContextMenu']]> as any;
+    @Output() onEdgeDoubleClick = new EventEmitter<[XYFlowProps['onEdgeDoubleClick']]> as any;
+    @Output() onEdgeMouseEnter = new EventEmitter<[XYFlowProps['onEdgeMouseEnter']]> as any;
+    @Output() onEdgeMouseLeave = new EventEmitter<[XYFlowProps['onEdgeMouseLeave']]> as any;
+    @Output() onEdgeMouseMove = new EventEmitter<[XYFlowProps['onEdgeMouseMove']]> as any;
+    @Output() onEdgesChange = new EventEmitter<[XYFlowProps['onEdgesChange']]> as any;
+    @Output() onEdgesDelete = new EventEmitter<[XYFlowProps['onEdgesDelete']]> as any;
+    @Output() onError = new EventEmitter<[XYFlowProps['onError']]> as any;
+    @Output() onInit = new EventEmitter<[XYFlowProps['onInit']]> as any;
+    @Output() onMove = new EventEmitter<[XYFlowProps['onMove']]> as any;
+    @Output() onMoveEnd = new EventEmitter<[XYFlowProps['onMoveEnd']]> as any;
+    @Output() onMoveStart = new EventEmitter<[XYFlowProps['onMoveStart']]> as any;
+    @Output() onNodeClick = new EventEmitter<[XYFlowProps['onNodeClick']]> as any;
+    @Output() onNodeContextMenu = new EventEmitter<[XYFlowProps['onNodeContextMenu']]> as any;
+    @Output() onNodeDoubleClick = new EventEmitter<[XYFlowProps['onNodeDoubleClick']]> as any;
+    @Output() onNodeDrag = new EventEmitter<[XYFlowProps['onNodeDrag']]> as any;
+    @Output() onNodeDragStart = new EventEmitter<[XYFlowProps['onNodeDragStart']]> as any;
+    @Output() onNodeDragStop = new EventEmitter<[XYFlowProps['onNodeDragStop']]> as any;
+    @Output() onNodeMouseEnter = new EventEmitter<[XYFlowProps['onNodeMouseEnter']]> as any;
+    @Output() onNodeMouseLeave = new EventEmitter<[XYFlowProps['onNodeMouseLeave']]> as any;
+    @Output() onNodeMouseMove = new EventEmitter<[XYFlowProps['onNodeMouseMove']]> as any;
+    @Output() onNodesChange = new EventEmitter<[XYFlowProps['onNodesChange']]> as any;
+    @Output() onNodesDelete = new EventEmitter<[XYFlowProps['onNodesDelete']]> as any;
+    @Output() onPaneClick = new EventEmitter<[XYFlowProps['onPaneClick']]> as any;
+    @Output() onPaneContextMenu = new EventEmitter<[XYFlowProps['onPaneContextMenu']]> as any;
+    @Output() onPaneMouseEnter = new EventEmitter<[XYFlowProps['onPaneMouseEnter']]> as any;
+    @Output() onPaneMouseLeave = new EventEmitter<[XYFlowProps['onPaneMouseLeave']]> as any;
+    @Output() onPaneMouseMove = new EventEmitter<[XYFlowProps['onPaneMouseMove']]> as any;
+    @Output() onPaneScroll = new EventEmitter<[XYFlowProps['onPaneScroll']]> as any;
+    @Output() onReconnect = new EventEmitter<[XYFlowProps['onReconnect']]> as any;
+    @Output() onReconnectStart = new EventEmitter<[XYFlowProps['onReconnectStart']]> as any;
+    @Output() onReconnectEnd = new EventEmitter<[XYFlowProps['onReconnectEnd']]> as any;
+    @Output() onSelectionChange = new EventEmitter<[XYFlowProps['onSelectionChange']]> as any;
+    @Output() onSelectionContextMenu = new EventEmitter<[XYFlowProps['onSelectionContextMenu']]> as any;
+    @Output() onSelectionDrag = new EventEmitter<[XYFlowProps['onSelectionDrag']]> as any;
+    @Output() onSelectionDragStart = new EventEmitter<[XYFlowProps['onSelectionDragStart']]> as any;
+    @Output() onSelectionDragStop = new EventEmitter<[XYFlowProps['onSelectionDragStop']]> as any;
+    @Output() onSelectionEnd = new EventEmitter<[XYFlowProps['onSelectionEnd']]> as any;
+    @Output() onSelectionStart = new EventEmitter<[XYFlowProps['onSelectionStart']]> as any;
 
 
     @ContentChild(BackgroundDirective) _background: BackgroundDirective;
