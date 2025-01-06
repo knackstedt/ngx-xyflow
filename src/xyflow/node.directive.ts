@@ -29,7 +29,7 @@ import { NodeToolbarDirective } from './node-toolbar.directive';
     ],
     standalone: true
 })
-class ReactflowNodeComponent {
+class XYFlowNodeComponent {
     @Input() template: TemplateRef<any>;
     @Input() data: any;
     @Input() node: any;
@@ -120,7 +120,7 @@ export class NodeDirective {
         }
 
         this.xyflow.nodeTypes[this.nodeType] = ReactifyReactComponent({
-            component: ReactflowNodeComponent,
+            component: XYFlowNodeComponent,
             appRef: this.appRef,
             injector: this.injector,
             ngZone: this.ngZone,
