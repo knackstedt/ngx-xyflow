@@ -1,6 +1,9 @@
 import { Component, ContentChild, EventEmitter, Input, NgZone, Output, ViewContainerRef, ViewEncapsulation } from '@angular/core';
 import { ReactifyNgComponent } from 'ngx-reactify';
 import {
+    addEdge,
+    applyEdgeChanges,
+    applyNodeChanges,
     Background,
     Controls,
     MiniMap,
@@ -12,6 +15,7 @@ import * as React from 'react';
 import { BackgroundDirective } from './background.directive';
 import { ControlsDirective } from './controls.directive';
 import { MinimapDirective } from './minimap.directive';
+import { ReactFlowProviderProps } from '@xyflow/react/dist/esm/components/ReactFlowProvider';
 
 type XYFlowProps = ReactFlowProps<any, any>;
 type OverriddenProps = 'onBeforeDelete' | 'onClickConnectEnd' | 'onClickConnectStart' | 'onConnect' | 'onConnectEnd' | 'onConnectStart' | 'onDelete' | 'onEdgeClick' | 'onEdgeContextMenu' | 'onEdgeDoubleClick' | 'onEdgeMouseEnter' | 'onEdgeMouseLeave' | 'onEdgeMouseMove' | 'onEdgesChange' | 'onEdgesDelete' | 'onError' | 'onInit' | 'onMove' | 'onMoveEnd' | 'onMoveStart' | 'onNodeClick' | 'onNodeContextMenu' | 'onNodeDoubleClick' | 'onNodeDrag' | 'onNodeDragStart' | 'onNodeDragStop' | 'onNodeMouseEnter' | 'onNodeMouseLeave' | 'onNodeMouseMove' | 'onNodesChange' | 'onNodesDelete' | 'onPaneClick' | 'onPaneContextMenu' | 'onPaneMouseEnter' | 'onPaneMouseLeave' | 'onPaneMouseMove' | 'onPaneScroll' | 'onReconnect' | 'onReconnectStart' | 'onReconnectEnd' | 'onSelectionChange' | 'onSelectionContextMenu' | 'onSelectionDrag' | 'onSelectionDragStart' | 'onSelectionDragStop' | 'onSelectionEnd' | 'onSelectionStart';
@@ -139,7 +143,8 @@ export class XYFlowComponent extends ReactifyNgComponent implements XYFlowProps 
     @ContentChild(ControlsDirective) _controls: ControlsDirective;
     @ContentChild(MinimapDirective) _minimap: MinimapDirective;
 
-    override ngReactComponent = ({ props }) => {
+
+    override ngReactComponent = ({ props }: { props: ReactFlowProps }) => {
         const getProps = (obj = {}) => {
             const props = {};
             Object.entries(obj).forEach(([k, v]) => {
@@ -175,6 +180,33 @@ export class XYFlowComponent extends ReactifyNgComponent implements XYFlowProps 
             this._controls ? React.createElement(Controls, controlProps) : null,
             this._minimap ? React.createElement(MiniMap, minimapProps) : null,
         ].filter(r => r);
+
+        const [nodes, setNodes] = React.useState(this.nodes);
+        const [edges, setEdges] = React.useState(this.edges);
+        props.onNodesChange = React.useCallback(
+            (changes) => setNodes((nds) => applyNodeChanges(changes, nds)),
+            [],
+        );
+        props.onEdgesChange = React.useCallback(
+            (changes) => setEdges((eds) => applyEdgeChanges(changes, eds)),
+            [],
+        );
+        props.onConnect = React.useCallback(
+            (params) => setEdges((eds) => addEdge(params, eds)),
+            [],
+        );
+
+        props.nodes = nodes;
+        props.edges = edges;
+
+        // Effectively outputs this:
+        // <ReactFlowProvider>
+        //     <ReactFlow props={props}>
+        //         <Background/>
+        //         <Controls/>
+        //         <MiniMap/>
+        //     </ReactFlow>
+        // </ReactFlowProvider>
         return React.createElement(ReactFlowProvider, { children: [] },
             React.createElement(ReactFlow, { ...props } as any,
                 ...reactDirectives
