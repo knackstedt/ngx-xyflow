@@ -1,6 +1,6 @@
 import { NgTemplateOutlet } from '@angular/common';
 import { ApplicationRef, Component, ContentChild, ContentChildren, Directive, ElementRef, EventEmitter, Injector, Input, NgZone, Output, QueryList, TemplateRef, ViewChildren } from '@angular/core';
-import { ReactifyNgComponent, ReactifyReactComponent } from 'ngx-reactify';
+import { ReactifyNgComponent, ReactifyAngularComponent } from 'ngx-reactify';
 import { Handle, NodeResizer, NodeToolbar } from '@xyflow/react';
 import * as React from 'react';
 import { HandleDirective } from './handle.directive';
@@ -15,7 +15,7 @@ import { NodeToolbarDirective } from './node-toolbar.directive';
         @if(template) {
             <ng-container
                 [ngTemplateOutlet]="template"
-                [ngTemplateOutletContext]="{ '$implicit': data, 'node': node }"
+                [ngTemplateOutletContext]="{ '$implicit': data }"
             />
         }
         @else {
@@ -37,8 +37,7 @@ class XYFlowNodeComponent {
 
 
 @Directive({
-    selector: 'ngx-xyflow>ngx-xyflow-node',
-    inputs: ['nodeType']
+    selector: 'ngx-xyflow>ngx-xyflow-node'
 })
 export class NodeDirective {
 
@@ -119,11 +118,12 @@ export class NodeDirective {
             return props;
         }
 
-        this.xyflow.nodeTypes[this.nodeType] = ReactifyReactComponent({
+        this.xyflow.nodeTypes[this.nodeType] = ReactifyAngularComponent({
             component: XYFlowNodeComponent,
             appRef: this.appRef,
             injector: this.injector,
             ngZone: this.ngZone,
+
             preSiblings: [
                 this.nodeResizer ? React.createElement(NodeResizer, getProps(this.nodeResizer)) : null,
                 this.nodeToolbar ? React.createElement(NodeToolbar, getProps(this.nodeToolbar)) : null
@@ -137,6 +137,7 @@ export class NodeDirective {
                     return React.createElement(Handle, props);
                 }) || []),
             ].filter(c => c),
+
             rootElementName: React.Fragment as any,// "ngx-xyflow-node",
             containerElementName: "ngx-xyflow-node-container",
             staticInputs: { template: this.template },

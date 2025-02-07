@@ -6,7 +6,7 @@
   },
   "scripts": {
     "build": "ng build --project package",
-    "dev": "ng serve --project devel --port 4400 --ssl",
+    "dev": "ng serve --project devel --port 4500 --ssl",
     "dev:package": "ng build --project package --watch --configuration development"
   },
   "private": false,
@@ -16,8 +16,8 @@
     "@angular/core": "^17.1.2",
     "@angular/platform-browser": "^17.1.2",
     "@angular/platform-browser-dynamic": "^17.1.2",
-    "@xyflow/react": "^12.3.5",
-    "ngx-reactify": "^0.0.1",
+    "@xyflow/react": "^12.4.2",
+    "ngx-reactify": "^0.0.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "rxjs": "~7.8.1",
