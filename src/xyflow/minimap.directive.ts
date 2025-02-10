@@ -1,4 +1,4 @@
-import { Directive, EventEmitter, Input, Output } from '@angular/core';
+import {Directive, EventEmitter, Input, Output, SimpleChanges} from '@angular/core';
 import { MiniMapProps } from '@xyflow/react';
 import { XYFlowComponent } from './xyflow.component';
 
@@ -29,7 +29,7 @@ export class MinimapDirective implements Omit<MiniMapProps, 'onClick' | 'onNodeC
     @Output() onNodeClick = new EventEmitter<Parameters<MiniMapProps['onNodeClick']>>();
 
     constructor(private readonly xyflow: XYFlowComponent) { }
-    ngOnChanges() {
-        this.xyflow.ngOnChanges();
+    ngOnChanges(changes: SimpleChanges) {
+        this.xyflow.ngOnChanges(changes);
     }
 }

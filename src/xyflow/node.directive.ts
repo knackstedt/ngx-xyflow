@@ -1,5 +1,21 @@
 import { NgTemplateOutlet } from '@angular/common';
-import { ApplicationRef, Component, ContentChild, ContentChildren, Directive, ElementRef, EventEmitter, Injector, Input, NgZone, Output, QueryList, TemplateRef, ViewChildren } from '@angular/core';
+import {
+    ApplicationRef,
+    Component,
+    ContentChild,
+    ContentChildren,
+    Directive,
+    ElementRef,
+    EventEmitter,
+    Injector,
+    Input,
+    NgZone,
+    Output,
+    QueryList,
+    SimpleChanges,
+    TemplateRef,
+    ViewChildren
+} from '@angular/core';
 import { ReactifyNgComponent, ReactifyAngularComponent } from 'ngx-reactify';
 import { Handle, NodeResizer, NodeToolbar } from '@xyflow/react';
 import * as React from 'react';
@@ -95,8 +111,8 @@ export class NodeDirective {
         private readonly ngZone: NgZone
     ) { }
 
-    ngOnChanges() {
-        this.xyflow.ngOnChanges();
+    ngOnChanges(changes: SimpleChanges) {
+        this.xyflow.ngOnChanges(changes);
     }
 
     ngAfterViewInit() {

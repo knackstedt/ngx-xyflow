@@ -75,4 +75,19 @@ export class AppComponent {
         console.log(data)
     }
 
+    addNode() {
+        const nodeCount = this.nodes.length;
+        const id = (nodeCount + 1).toString();
+
+        this.nodes = [
+            ...this.nodes,
+            {
+                id: id,
+                type: 'output',
+                data: { label: `New node ${id}` },
+                position: { x: 650 , y: (nodeCount * 100) },
+                targetPosition: 'left',
+            }
+        ];
+    }
 }

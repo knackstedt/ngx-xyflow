@@ -1,4 +1,4 @@
-import { Directive, Input } from '@angular/core';
+import {Directive, Input, SimpleChanges} from '@angular/core';
 import { NodeResizerProps } from '@xyflow/react';
 import { XYFlowComponent } from './xyflow.component';
 
@@ -26,7 +26,7 @@ export class NodeResizerDirective implements NodeResizerProps {
     @Input() onResizeEnd: NodeResizerProps['onResizeEnd'];
 
     constructor(private readonly xyflow: XYFlowComponent) { }
-    ngOnChanges() {
-        this.xyflow.ngOnChanges();
+    ngOnChanges(changes: SimpleChanges) {
+        this.xyflow.ngOnChanges(changes);
     }
 }

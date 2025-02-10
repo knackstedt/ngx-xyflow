@@ -1,4 +1,14 @@
-import { Component, ContentChild, EventEmitter, Input, NgZone, Output, ViewContainerRef, ViewEncapsulation } from '@angular/core';
+import {
+    Component,
+    ContentChild,
+    EventEmitter,
+    Input,
+    NgZone,
+    OnChanges,
+    Output, SimpleChanges,
+    ViewContainerRef,
+    ViewEncapsulation
+} from '@angular/core';
 import { ReactifyNgComponent } from 'ngx-reactify';
 import {
     addEdge,
@@ -27,7 +37,7 @@ type InheritedXYFlowProps = Omit<XYFlowProps, OverriddenProps>;
     styleUrls: ['../../node_modules/@xyflow/react/dist/style.css'],
     encapsulation: ViewEncapsulation.None
 })
-export class XYFlowComponent extends ReactifyNgComponent implements XYFlowProps {
+export class XYFlowComponent extends ReactifyNgComponent implements XYFlowProps, OnChanges {
 
     @Input() nodes: XYFlowProps['nodes'];
     @Input() edges: XYFlowProps['edges'];
@@ -144,6 +154,9 @@ export class XYFlowComponent extends ReactifyNgComponent implements XYFlowProps 
     @ContentChild(MinimapDirective) _minimap: MinimapDirective;
 
 
+    private setNodes: React.Dispatch<React.SetStateAction<any[]>>;
+    private setEdges: React.Dispatch<React.SetStateAction<any[]>>;
+
     override ngReactComponent = ({ props }: { props: ReactFlowProps }) => {
         const getProps = (obj = {}) => {
             const props = {};
@@ -183,6 +196,13 @@ export class XYFlowComponent extends ReactifyNgComponent implements XYFlowProps 
 
         const [nodes, setNodes] = React.useState(this.nodes);
         const [edges, setEdges] = React.useState(this.edges);
+
+        // Store setState functions for use in ngOnChanges
+        React.useEffect(() => {
+            this.setNodes = setNodes;
+            this.setEdges = setEdges;
+        }, [setNodes, setEdges]);
+
         props.onNodesChange = React.useCallback(
             (changes) => setNodes((nds) => applyNodeChanges(changes, nds)),
             [],
@@ -227,5 +247,14 @@ export class XYFlowComponent extends ReactifyNgComponent implements XYFlowProps 
 
     override ngAfterViewInit() {
         super.ngAfterViewInit();
+    }
+
+    override ngOnChanges(changes?: SimpleChanges) {
+        if (changes['nodes'] && !changes['nodes'].firstChange && this.setNodes) {
+            this.setNodes(changes['nodes'].currentValue);
+        }
+        if (changes['edges'] && !changes['edges'].firstChange && this.setEdges) {
+            this.setEdges(changes['edges'].currentValue);
+        }
     }
 }
