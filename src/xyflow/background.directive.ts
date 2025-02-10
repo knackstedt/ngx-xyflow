@@ -1,4 +1,4 @@
-import { Directive, Input } from '@angular/core';
+import {Directive, Input, SimpleChanges} from '@angular/core';
 import { BackgroundProps } from '@xyflow/react';
 import { XYFlowComponent } from './xyflow.component';
 
@@ -20,7 +20,7 @@ export class BackgroundDirective implements BackgroundProps {
     @Input() variant: BackgroundProps['variant'];
 
     constructor(private readonly xyflow: XYFlowComponent) {}
-    ngOnChanges() {
-        this.xyflow.ngOnChanges();
+    ngOnChanges(changes: SimpleChanges) {
+        this.xyflow.ngOnChanges(changes);
     }
 }

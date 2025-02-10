@@ -1,4 +1,4 @@
-import { Directive, Input } from '@angular/core';
+import {Directive, Input, SimpleChanges} from '@angular/core';
 import { NodeToolbarProps } from '@xyflow/react';
 import { XYFlowComponent } from './xyflow.component';
 
@@ -13,7 +13,7 @@ export class NodeToolbarDirective implements Omit<NodeToolbarProps, 'position'> 
     @Input() position: 'top' | 'left' | 'right' | 'bottom';
 
     constructor(private readonly xyflow: XYFlowComponent) { }
-    ngOnChanges() {
-        this.xyflow.ngOnChanges();
+    ngOnChanges(changes: SimpleChanges) {
+        this.xyflow.ngOnChanges(changes);
     }
 }

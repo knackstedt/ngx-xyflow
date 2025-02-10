@@ -1,4 +1,4 @@
-import { Directive, Input } from '@angular/core';
+import {Directive, Input, SimpleChanges} from '@angular/core';
 import { HandleProps } from '@xyflow/react';
 import { XYFlowComponent } from './xyflow.component';
 
@@ -19,7 +19,7 @@ export class HandleDirective implements Omit<HandleProps, "position" | "onConnec
     // @Output() onEdgesDelete = new EventEmitter<[XYFlowProps['onEdgesDelete']]>
 
     constructor(private readonly xyflow: XYFlowComponent) { }
-    ngOnChanges() {
-        this.xyflow.ngOnChanges();
+    ngOnChanges(changes: SimpleChanges) {
+        this.xyflow.ngOnChanges(changes);
     }
 }
