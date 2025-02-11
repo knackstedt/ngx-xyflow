@@ -1,8 +1,8 @@
 <button style="position: absolute;z-index: 10" (click)="addNode()">Add node</button>
 
 <ngx-xyflow
-    [nodes]="nodes"
-    [edges]="edges"
+    [(nodes)]="nodes"
+    [(edges)]="edges"
 >
     <ngx-xyflow-background
         color="pink"
