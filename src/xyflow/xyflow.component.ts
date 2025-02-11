@@ -274,5 +274,6 @@ export class XYFlowComponent extends ReactifyNgComponent implements XYFlowProps,
         if (this._setEdges && changes['_edges']?.firstChange == false) {
             this._setEdges(changes['_edges'].currentValue);
         }
+        super.ngOnChanges();
     }
 }
