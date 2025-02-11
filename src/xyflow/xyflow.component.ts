@@ -39,11 +39,11 @@ type InheritedXYFlowProps = Omit<XYFlowProps, OverriddenProps>;
 })
 export class XYFlowComponent extends ReactifyNgComponent implements XYFlowProps, OnChanges {
 
-    @Input() nodes: XYFlowProps['nodes'];
-    @Output() nodesChange = new EventEmitter<XYFlowProps['nodes']>();
+    @Input("nodes") _nodes: XYFlowProps['nodes'];
+    @Output("nodesChange") _nodesChange = new EventEmitter<XYFlowProps['nodes']>();
 
-    @Input() edges: XYFlowProps['edges'];
-    @Output() edgesChange = new EventEmitter<XYFlowProps['edges']>();
+    @Input("edges") _edges: XYFlowProps['edges'];
+    @Output("edgesChange") _edgesChange = new EventEmitter<XYFlowProps['edges']>();
 
     @Input() defaultEdgeOptions: XYFlowProps['defaultEdgeOptions'];
 
@@ -158,8 +158,8 @@ export class XYFlowComponent extends ReactifyNgComponent implements XYFlowProps,
     @ContentChild(MinimapDirective) _minimap: MinimapDirective;
 
 
-    private setNodes: React.Dispatch<React.SetStateAction<any[]>>;
-    private setEdges: React.Dispatch<React.SetStateAction<any[]>>;
+    private _setNodes: React.Dispatch<React.SetStateAction<any[]>>;
+    private _setEdges: React.Dispatch<React.SetStateAction<any[]>>;
 
     override ngReactComponent = ({ props }: { props: ReactFlowProps }) => {
         const getProps = (obj = {}) => {
@@ -198,32 +198,43 @@ export class XYFlowComponent extends ReactifyNgComponent implements XYFlowProps,
             this._minimap ? React.createElement(MiniMap, minimapProps) : null,
         ].filter(r => r);
 
-        const [nodes, setNodes] = React.useState(this.nodes);
-        const [edges, setEdges] = React.useState(this.edges);
+        const [nodes, setNodes] = React.useState(this._nodes);
+        const [edges, setEdges] = React.useState(this._edges);
 
         // Store setState functions for use in ngOnChanges
         React.useEffect(() => {
-            this.setNodes = setNodes;
-            this.setEdges = setEdges;
+            this._setNodes = setNodes;
+            this._setEdges = setEdges;
         }, [setNodes, setEdges]);
 
         props.onNodesChange = React.useCallback(
-            (changes) => setNodes((nds) => applyNodeChanges(changes, nds)),
-            [],
+            (changes) => setNodes((nds) => {
+                const nodes = applyNodeChanges(changes, nds);
+                this._nodesChange.emit(this._nodes = nodes);
+                return nodes;
+            }),
+            []
         );
         props.onEdgesChange = React.useCallback(
-            (changes) => setEdges((eds) => applyEdgeChanges(changes, eds)),
-            [],
+            (changes) => setEdges((eds) => {
+                const edges = applyEdgeChanges(changes, eds);
+                this._edgesChange.emit(this._edges = edges);
+                return edges;
+            }),
+            []
         );
         props.onConnect = React.useCallback(
-            (params) => setEdges((eds) => addEdge(params, eds)),
-            [],
+            (params) => setEdges((eds) => {
+                const edges = addEdge(params, eds);
+                this._edgesChange.emit(this._edges = edges);
+                return edges;
+            }),
+            []
         );
 
+        // Overwrite the property bindings
         props.nodes = nodes;
         props.edges = edges;
-
-        this.synchronizeNodesAndEdges(nodes, edges)
 
         // Effectively outputs this:
         // <ReactFlowProvider>
@@ -234,32 +245,12 @@ export class XYFlowComponent extends ReactifyNgComponent implements XYFlowProps,
         //     </ReactFlow>
         // </ReactFlowProvider>
 
-
-        const reactProps = XYFlowComponent.sanitizeReactProps(props);
-
         return React.createElement(ReactFlowProvider, { children: [] },
-            React.createElement(ReactFlow, reactProps as any,
+            React.createElement(ReactFlow, props as any,
                 ...reactDirectives
             )
         );
     };
-
-    private static sanitizeReactProps(props: ReactFlowProps) {
-        const reactProps = { ...props };
-
-        delete(reactProps['nodesChange']);
-        delete(reactProps['edgesChange']);
-
-        return reactProps;
-    }
-
-    private synchronizeNodesAndEdges(nodes: XYFlowProps['nodes'], edges: XYFlowProps['edges']) {
-        this.nodes = nodes;
-        this.nodesChange.emit(this.nodes);
-
-        this.edges = edges;
-        this.edgesChange.emit(this.edges);
-    }
 
     constructor(
         ngContainer: ViewContainerRef,
@@ -277,11 +268,11 @@ export class XYFlowComponent extends ReactifyNgComponent implements XYFlowProps,
     }
 
     override ngOnChanges(changes?: SimpleChanges) {
-        if (changes['nodes'] && !changes['nodes'].firstChange && this.setNodes) {
-            this.setNodes(changes['nodes'].currentValue);
+        if (this._setNodes && changes['_nodes']?.firstChange == false) {
+            this._setNodes(changes['_nodes'].currentValue);
         }
-        if (changes['edges'] && !changes['edges'].firstChange && this.setEdges) {
-            this.setEdges(changes['edges'].currentValue);
+        if (this._setEdges && changes['_edges']?.firstChange == false) {
+            this._setEdges(changes['_edges'].currentValue);
         }
     }
 }
