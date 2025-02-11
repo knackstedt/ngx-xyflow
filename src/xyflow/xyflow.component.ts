@@ -5,11 +5,12 @@ import {
     Input,
     NgZone,
     OnChanges,
-    Output, SimpleChanges,
+    Output,
+    SimpleChanges,
     ViewContainerRef,
     ViewEncapsulation
 } from '@angular/core';
-import { ReactifyNgComponent } from 'ngx-reactify';
+import {ReactifyNgComponent} from 'ngx-reactify';
 import {
     addEdge,
     applyEdgeChanges,
@@ -22,10 +23,9 @@ import {
     ReactFlowProvider
 } from '@xyflow/react';
 import * as React from 'react';
-import { BackgroundDirective } from './background.directive';
-import { ControlsDirective } from './controls.directive';
-import { MinimapDirective } from './minimap.directive';
-import { ReactFlowProviderProps } from '@xyflow/react/dist/esm/components/ReactFlowProvider';
+import {BackgroundDirective} from './background.directive';
+import {ControlsDirective} from './controls.directive';
+import {MinimapDirective} from './minimap.directive';
 
 type XYFlowProps = ReactFlowProps<any, any>;
 type OverriddenProps = 'onBeforeDelete' | 'onClickConnectEnd' | 'onClickConnectStart' | 'onConnect' | 'onConnectEnd' | 'onConnectStart' | 'onDelete' | 'onEdgeClick' | 'onEdgeContextMenu' | 'onEdgeDoubleClick' | 'onEdgeMouseEnter' | 'onEdgeMouseLeave' | 'onEdgeMouseMove' | 'onEdgesChange' | 'onEdgesDelete' | 'onError' | 'onInit' | 'onMove' | 'onMoveEnd' | 'onMoveStart' | 'onNodeClick' | 'onNodeContextMenu' | 'onNodeDoubleClick' | 'onNodeDrag' | 'onNodeDragStart' | 'onNodeDragStop' | 'onNodeMouseEnter' | 'onNodeMouseLeave' | 'onNodeMouseMove' | 'onNodesChange' | 'onNodesDelete' | 'onPaneClick' | 'onPaneContextMenu' | 'onPaneMouseEnter' | 'onPaneMouseLeave' | 'onPaneMouseMove' | 'onPaneScroll' | 'onReconnect' | 'onReconnectStart' | 'onReconnectEnd' | 'onSelectionChange' | 'onSelectionContextMenu' | 'onSelectionDrag' | 'onSelectionDragStart' | 'onSelectionDragStop' | 'onSelectionEnd' | 'onSelectionStart';
@@ -40,7 +40,11 @@ type InheritedXYFlowProps = Omit<XYFlowProps, OverriddenProps>;
 export class XYFlowComponent extends ReactifyNgComponent implements XYFlowProps, OnChanges {
 
     @Input() nodes: XYFlowProps['nodes'];
+    @Output() nodesChange = new EventEmitter<XYFlowProps['nodes']>();
+
     @Input() edges: XYFlowProps['edges'];
+    @Output() edgesChange = new EventEmitter<XYFlowProps['edges']>();
+
     @Input() defaultEdgeOptions: XYFlowProps['defaultEdgeOptions'];
 
     nodeTypes: XYFlowProps['nodeTypes'] = {};
@@ -219,6 +223,8 @@ export class XYFlowComponent extends ReactifyNgComponent implements XYFlowProps,
         props.nodes = nodes;
         props.edges = edges;
 
+        this.synchronizeNodesAndEdges(nodes, edges)
+
         // Effectively outputs this:
         // <ReactFlowProvider>
         //     <ReactFlow props={props}>
@@ -227,12 +233,33 @@ export class XYFlowComponent extends ReactifyNgComponent implements XYFlowProps,
         //         <MiniMap/>
         //     </ReactFlow>
         // </ReactFlowProvider>
+
+
+        const reactProps = XYFlowComponent.sanitizeReactProps(props);
+
         return React.createElement(ReactFlowProvider, { children: [] },
-            React.createElement(ReactFlow, { ...props } as any,
+            React.createElement(ReactFlow, reactProps as any,
                 ...reactDirectives
             )
         );
     };
+
+    private static sanitizeReactProps(props: ReactFlowProps) {
+        const reactProps = { ...props };
+
+        delete(reactProps['nodesChange']);
+        delete(reactProps['edgesChange']);
+
+        return reactProps;
+    }
+
+    private synchronizeNodesAndEdges(nodes: XYFlowProps['nodes'], edges: XYFlowProps['edges']) {
+        this.nodes = nodes;
+        this.nodesChange.emit(this.nodes);
+
+        this.edges = edges;
+        this.edgesChange.emit(this.edges);
+    }
 
     constructor(
         ngContainer: ViewContainerRef,
