@@ -10,7 +10,6 @@ import {
     ViewContainerRef,
     ViewEncapsulation
 } from '@angular/core';
-import {ReactifyNgComponent} from 'ngx-reactify';
 import {
     addEdge,
     applyEdgeChanges,
@@ -19,13 +18,15 @@ import {
     Controls,
     MiniMap,
     ReactFlow,
+    ReactFlowInstance,
     ReactFlowProps,
     ReactFlowProvider
 } from '@xyflow/react';
+import { ReactifyNgComponent } from 'ngx-reactify';
 import * as React from 'react';
-import {BackgroundDirective} from './background.directive';
-import {ControlsDirective} from './controls.directive';
-import {MinimapDirective} from './minimap.directive';
+import { BackgroundDirective } from './background.directive';
+import { ControlsDirective } from './controls.directive';
+import { MinimapDirective } from './minimap.directive';
 
 type XYFlowProps = ReactFlowProps<any, any>;
 type OverriddenProps = 'onBeforeDelete' | 'onClickConnectEnd' | 'onClickConnectStart' | 'onConnect' | 'onConnectEnd' | 'onConnectStart' | 'onDelete' | 'onEdgeClick' | 'onEdgeContextMenu' | 'onEdgeDoubleClick' | 'onEdgeMouseEnter' | 'onEdgeMouseLeave' | 'onEdgeMouseMove' | 'onEdgesChange' | 'onEdgesDelete' | 'onError' | 'onInit' | 'onMove' | 'onMoveEnd' | 'onMoveStart' | 'onNodeClick' | 'onNodeContextMenu' | 'onNodeDoubleClick' | 'onNodeDrag' | 'onNodeDragStart' | 'onNodeDragStop' | 'onNodeMouseEnter' | 'onNodeMouseLeave' | 'onNodeMouseMove' | 'onNodesChange' | 'onNodesDelete' | 'onPaneClick' | 'onPaneContextMenu' | 'onPaneMouseEnter' | 'onPaneMouseLeave' | 'onPaneMouseMove' | 'onPaneScroll' | 'onReconnect' | 'onReconnectStart' | 'onReconnectEnd' | 'onSelectionChange' | 'onSelectionContextMenu' | 'onSelectionDrag' | 'onSelectionDragStart' | 'onSelectionDragStop' | 'onSelectionEnd' | 'onSelectionStart';
@@ -47,8 +48,10 @@ export class XYFlowComponent extends ReactifyNgComponent implements XYFlowProps,
 
     @Input() defaultEdgeOptions: XYFlowProps['defaultEdgeOptions'];
 
-    nodeTypes: XYFlowProps['nodeTypes'] = {};
+    nodeTypes: any = {} ; //XYFlowProps['nodeTypes'] = {};
     edgeTypes: XYFlowProps['edgeTypes'] = {};
+
+    instance: ReactFlowInstance;
 
     @Input() connectionLineType: XYFlowProps['connectionLineType'];
     @Input() connectionLineStyle: XYFlowProps['connectionLineStyle'];
@@ -236,6 +239,7 @@ export class XYFlowComponent extends ReactifyNgComponent implements XYFlowProps,
         props.nodes = nodes;
         props.edges = edges;
 
+
         // Effectively outputs this:
         // <ReactFlowProvider>
         //     <ReactFlow props={props}>
@@ -246,7 +250,9 @@ export class XYFlowComponent extends ReactifyNgComponent implements XYFlowProps,
         // </ReactFlowProvider>
 
         return React.createElement(ReactFlowProvider, { children: [] },
-            React.createElement(ReactFlow, props as any,
+            React.createElement(ReactFlow, { ...props as any, onInit: rf => {
+                this.instance = rf;
+            }},
                 ...reactDirectives
             )
         );
