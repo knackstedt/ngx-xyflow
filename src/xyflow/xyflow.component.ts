@@ -107,7 +107,7 @@ export class XYFlowComponent extends ReactifyNgComponent implements XYFlowProps,
     // `as any` casting for the Output properties to inherit the description from the xyflow JSDOC comments.
     // As of now I don't know of a better way to replace the types while keeping the comments.
 
-    @Output() onBeforeDelete = new EventEmitter<[XYFlowProps['onBeforeDelete']]> as any;
+    // @Output() onBeforeDelete = new EventEmitter<[XYFlowProps['onBeforeDelete']]> as any;
     @Output() onClickConnectEnd = new EventEmitter<[XYFlowProps['onClickConnectEnd']]> as any;
     @Output() onClickConnectStart = new EventEmitter<[XYFlowProps['onClickConnectStart']]> as any;
     @Output() onConnect = new EventEmitter<[XYFlowProps['onConnect']]> as any;
@@ -220,6 +220,7 @@ export class XYFlowComponent extends ReactifyNgComponent implements XYFlowProps,
         );
         props.onEdgesChange = React.useCallback(
             (changes) => setEdges((eds) => {
+                console.log("SED")
                 const edges = applyEdgeChanges(changes, eds);
                 this._edgesChange.emit(this._edges = edges);
                 return edges;
