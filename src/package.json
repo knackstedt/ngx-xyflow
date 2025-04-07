@@ -25,7 +25,7 @@
     },
     "dependencies": {
         "@xyflow/react": ">=12.0.0",
-        "ngx-reactify": "^0.0.3",
+        "ngx-reactify": ">=0.1.0",
         "react": ">=18.0.0",
         "react-dom": ">=18.0.0",
         "tslib": ">=2.6.0"
