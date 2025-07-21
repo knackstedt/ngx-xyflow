@@ -1,4 +1,4 @@
-import {Directive, EventEmitter, Input, Output, SimpleChanges} from '@angular/core';
+import {booleanAttribute, Directive, EventEmitter, Input, Output, SimpleChanges} from '@angular/core';
 import { ControlProps } from '@xyflow/react';
 import { XYFlowComponent } from './xyflow.component';
 
@@ -13,9 +13,9 @@ export class ControlsDirective implements Omit<ControlProps, 'onFitView' | 'onIn
     @Input() fitViewOptions: ControlProps['fitViewOptions'];
     @Input() orientation: ControlProps['orientation'];
     @Input() position: ControlProps['position'];
-    @Input() showFitView: ControlProps['showFitView'];
-    @Input() showInteractive: ControlProps['showInteractive'];
-    @Input() showZoom: ControlProps['showZoom'];
+    @Input({ transform: booleanAttribute }) showFitView: ControlProps['showFitView'];
+    @Input({ transform: booleanAttribute }) showInteractive: ControlProps['showInteractive'];
+    @Input({ transform: booleanAttribute }) showZoom: ControlProps['showZoom'];
     @Input() style: ControlProps['style'];
 
     @Output() onFitView = new EventEmitter<Parameters<ControlProps['onFitView']>>();

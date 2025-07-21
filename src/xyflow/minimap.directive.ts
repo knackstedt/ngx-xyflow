@@ -1,4 +1,4 @@
-import {Directive, EventEmitter, Input, Output, SimpleChanges} from '@angular/core';
+import {booleanAttribute, Directive, EventEmitter, Input, Output, SimpleChanges} from '@angular/core';
 import { MiniMapProps } from '@xyflow/react';
 import { XYFlowComponent } from './xyflow.component';
 
@@ -20,9 +20,9 @@ export class MinimapDirective implements Omit<MiniMapProps, 'onClick' | 'onNodeC
     @Input() nodeStrokeColor: MiniMapProps['nodeStrokeColor'];
     @Input() nodeStrokeWidth: MiniMapProps['nodeStrokeWidth'];
     @Input() offsetScale: MiniMapProps['offsetScale'];
-    @Input() pannable: MiniMapProps['pannable'];
+    @Input({ transform: booleanAttribute }) pannable: MiniMapProps['pannable'];
     @Input() position: MiniMapProps['position'];
-    @Input() zoomable: MiniMapProps['zoomable'];
+    @Input({ transform: booleanAttribute }) zoomable: MiniMapProps['zoomable'];
     @Input() zoomStep: MiniMapProps['zoomStep'];
 
     @Output() onClick = new EventEmitter<Parameters<MiniMapProps['onClick']>>();

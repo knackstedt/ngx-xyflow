@@ -1,4 +1,4 @@
-import {Directive, Input, SimpleChanges} from '@angular/core';
+import {booleanAttribute, Directive, Input, SimpleChanges} from '@angular/core';
 import { NodeResizerProps } from '@xyflow/react';
 import { XYFlowComponent } from './xyflow.component';
 
@@ -10,8 +10,8 @@ export class NodeResizerDirective implements NodeResizerProps {
     @Input() color: NodeResizerProps['color'];
     @Input() handleClassName: NodeResizerProps['handleClassName'];
     @Input() handleStyle: NodeResizerProps['handleStyle'];
-    @Input() isVisible: NodeResizerProps['isVisible'];
-    @Input() keepAspectRatio: NodeResizerProps['keepAspectRatio'];
+    @Input({ transform: booleanAttribute }) isVisible: NodeResizerProps['isVisible'];
+    @Input({ transform: booleanAttribute }) keepAspectRatio: NodeResizerProps['keepAspectRatio'];
     @Input() lineClassName: NodeResizerProps['lineClassName'];
     @Input() lineStyle: NodeResizerProps['lineStyle'];
     @Input() maxHeight: NodeResizerProps['maxHeight'];

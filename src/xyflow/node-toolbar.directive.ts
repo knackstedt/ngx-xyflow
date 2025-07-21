@@ -1,4 +1,4 @@
-import {Directive, Input, SimpleChanges} from '@angular/core';
+import {booleanAttribute, Directive, Input, SimpleChanges} from '@angular/core';
 import { NodeToolbarProps } from '@xyflow/react';
 import { XYFlowComponent } from './xyflow.component';
 
@@ -7,7 +7,7 @@ import { XYFlowComponent } from './xyflow.component';
 })
 export class NodeToolbarDirective implements Omit<NodeToolbarProps, 'position'> {
 
-    @Input() isVisible: NodeToolbarProps['isVisible'];
+    @Input({ transform: booleanAttribute }) isVisible: NodeToolbarProps['isVisible'];
     @Input() nodeId: NodeToolbarProps['nodeId'];
     @Input() offset: NodeToolbarProps['offset'];
     @Input() position: 'top' | 'left' | 'right' | 'bottom';

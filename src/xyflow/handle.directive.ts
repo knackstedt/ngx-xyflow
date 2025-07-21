@@ -1,4 +1,4 @@
-import {Directive, Input, SimpleChanges} from '@angular/core';
+import {booleanAttribute, Directive, Input, SimpleChanges} from '@angular/core';
 import { HandleProps } from '@xyflow/react';
 import { XYFlowComponent } from './xyflow.component';
 
@@ -8,9 +8,9 @@ import { XYFlowComponent } from './xyflow.component';
 export class HandleDirective implements Omit<HandleProps, "position" | "onConnect"> {
 
     @Input() id: HandleProps['id'];
-    @Input() isConnectable: HandleProps['isConnectable'];
-    @Input() isConnectableEnd: HandleProps['isConnectableEnd'];
-    @Input() isConnectableStart: HandleProps['isConnectableStart'];
+    @Input({ transform: booleanAttribute }) isConnectable: HandleProps['isConnectable'];
+    @Input({ transform: booleanAttribute }) isConnectableEnd: HandleProps['isConnectableEnd'];
+    @Input({ transform: booleanAttribute }) isConnectableStart: HandleProps['isConnectableStart'];
     @Input() isValidConnection: HandleProps['isValidConnection'];
     @Input() position: 'top' | 'left' | 'right' | 'bottom';
     @Input() type: HandleProps['type'];
