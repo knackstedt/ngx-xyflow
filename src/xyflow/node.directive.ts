@@ -65,10 +65,6 @@ export class NodeDirective {
     @ContentChild(NodeResizerDirective) nodeResizer: NodeResizerDirective;
     @ContentChild(NodeToolbarDirective) nodeToolbar: NodeToolbarDirective;
 
-    @Output() f = new EventEmitter();
-
-    // @Output() onClick = new EventEmitter<Parameters<MiniMapProps['onClick']>>();
-    // @Output() onNodeClick = new EventEmitter<Parameters<MiniMapProps['onNodeClick']>>();
     @Output() blur = new EventEmitter<HTMLElementEventMap['blur']>();
     @Output() click = new EventEmitter<HTMLElementEventMap['click']>();
     @Output() contextmenu = new EventEmitter<HTMLElementEventMap['contextmenu']>();
