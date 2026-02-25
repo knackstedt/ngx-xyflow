@@ -1,4 +1,5 @@
 import {
+    ChangeDetectorRef,
     Component,
     ContentChild,
     EventEmitter,
@@ -48,7 +49,7 @@ export class XYFlowComponent extends ReactifyNgComponent implements XYFlowProps,
 
     @Input() defaultEdgeOptions: XYFlowProps['defaultEdgeOptions'];
 
-    nodeTypes: any = {} ; //XYFlowProps['nodeTypes'] = {};
+    nodeTypes: any = {}; //XYFlowProps['nodeTypes'] = {};
     edgeTypes: XYFlowProps['edgeTypes'] = {};
 
     instance: ReactFlowInstance;
@@ -164,7 +165,7 @@ export class XYFlowComponent extends ReactifyNgComponent implements XYFlowProps,
     private _setNodes: React.Dispatch<React.SetStateAction<any[]>>;
     private _setEdges: React.Dispatch<React.SetStateAction<any[]>>;
 
-    override ngReactComponent = ({ props }: { props: ReactFlowProps }) => {
+    override ngReactComponent = ({ props }: { props: ReactFlowProps; }) => {
         const getProps = (obj = {}) => {
             const props = {};
             Object.entries(obj).forEach(([k, v]) => {
@@ -174,9 +175,9 @@ export class XYFlowComponent extends ReactifyNgComponent implements XYFlowProps,
                 if (k.startsWith('on')) return;
 
                 props[k] = v;
-            })
+            });
             return props as any;
-        }
+        };
 
         const controlProps = getProps(this._controls);
         const minimapProps = getProps(this._minimap);
@@ -220,7 +221,7 @@ export class XYFlowComponent extends ReactifyNgComponent implements XYFlowProps,
         );
         props.onEdgesChange = React.useCallback(
             (changes) => setEdges((eds) => {
-                console.log("SED")
+                console.log("SED");
                 const edges = applyEdgeChanges(changes, eds);
                 this._edgesChange.emit(this._edges = edges);
                 return edges;
@@ -251,9 +252,11 @@ export class XYFlowComponent extends ReactifyNgComponent implements XYFlowProps,
         // </ReactFlowProvider>
 
         return React.createElement(ReactFlowProvider, { children: [] },
-            React.createElement(ReactFlow, { ...props as any, onInit: rf => {
-                this.instance = rf;
-            }},
+            React.createElement(ReactFlow, {
+                ...props as any, onInit: rf => {
+                    this.instance = rf;
+                }
+            },
                 ...reactDirectives
             )
         );
@@ -261,9 +264,11 @@ export class XYFlowComponent extends ReactifyNgComponent implements XYFlowProps,
 
     constructor(
         ngContainer: ViewContainerRef,
-        ngZone: NgZone
+        ngZone: NgZone,
+        cdr: ChangeDetectorRef
     ) {
         super(ngContainer, ngZone);
+        (this as any).ngChangeDetector = cdr;
     }
 
     override ngOnInit() {
