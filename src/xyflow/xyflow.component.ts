@@ -9,8 +9,7 @@ import {
     Output,
     SimpleChanges,
     ViewContainerRef,
-    ViewEncapsulation,
-    ChangeDetectorRef
+    ViewEncapsulation
 } from '@angular/core';
 import {
     addEdge,
