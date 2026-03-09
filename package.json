@@ -7,7 +7,8 @@
   "scripts": {
     "build": "ng build --project package",
     "dev": "ng serve --project devel --port 4500 --ssl",
-    "dev:package": "ng build --project package --watch --configuration development"
+    "dev:package": "ng build --project package --watch --configuration development",
+    "test": "ng test --project package"
   },
   "private": false,
   "dependencies": {
@@ -18,7 +19,7 @@
     "@angular/platform-browser": "^17.1.2",
     "@angular/platform-browser-dynamic": "^17.1.2",
     "@xyflow/react": "^12.4.5",
-    "ngx-reactify": "^0.1.0",
+    "ngx-reactify": "^0.2.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "rxjs": "~7.8.1",
@@ -29,8 +30,15 @@
     "@angular-devkit/build-angular": "^17.1.2",
     "@angular/cli": "~17.1.2",
     "@angular/compiler-cli": "^17.1.2",
+    "@types/jasmine": "~5.1.0",
     "@types/react": "^18.2.48",
     "@types/react-dom": "^18.2.18",
+    "jasmine-core": "~5.1.0",
+    "karma": "~6.4.0",
+    "karma-chrome-launcher": "~3.2.0",
+    "karma-coverage": "~2.2.0",
+    "karma-jasmine": "~5.1.0",
+    "karma-jasmine-html-reporter": "~2.1.0",
     "ng-packagr": "^17.1.2",
     "typescript": "~5.3.3"
   }
