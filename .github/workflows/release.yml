@@ -30,7 +30,7 @@ jobs:
 
       - name: Publish to npm
         run: npm publish --provenance
-        working-directory: ./dist/tabulator
+        working-directory: ./dist/xyflow
   create-release:
     needs: publish-npm
     runs-on: ubuntu-latest
