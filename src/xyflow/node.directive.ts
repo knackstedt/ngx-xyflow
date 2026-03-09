@@ -14,7 +14,8 @@ import {
     QueryList,
     SimpleChanges,
     TemplateRef,
-    ViewChildren
+    ViewChildren,
+    createComponent
 } from '@angular/core';
 import { Handle, NodeResizer, NodeToolbar } from '@xyflow/react';
 import * as React from 'react';
@@ -22,23 +23,20 @@ import { HandleDirective } from './handle.directive';
 import { XYFlowComponent } from './xyflow.component';
 import { NodeResizerDirective } from './node-resizer.directive';
 import { NodeToolbarDirective } from './node-toolbar.directive';
-import { AutoWrapAngularObject, ng2ReactProps } from 'ngx-reactify';
+import { ng2ReactProps } from 'ngx-reactify';
 
 
 @Component({
     selector: "ngx-xyflow-node",
     template: `
-        @if(template) {
-            <ng-container
-                [ngTemplateOutlet]="template"
-                [ngTemplateOutletContext]="{ '$implicit': data }"
-            />
-        }
-        @else {
-            <span style="color: red">
-                Node has no template.
-            </span>
-        }
+        <div style="width: 100%; height: 100%;">
+            @if(template) {
+                <ng-container
+                    [ngTemplateOutlet]="template"
+                    [ngTemplateOutletContext]="{ '$implicit': data }"
+                />
+            }
+        </div>
     `,
     imports: [
         NgTemplateOutlet
@@ -117,29 +115,64 @@ export class NodeDirective {
             return;
         }
 
-        this.xyflow.nodeTypes[this.nodeType] = AutoWrapAngularObject({
-            component: XYFlowNodeComponent,
-            appRef: this.appRef,
-            injector: this.injector,
-            instance: this,
-            ngZone: this.ngZone,
-            containerTag: "ngx-xyflow-node-container",
-            reactTemplate: el => {
-                return React.createElement(React.Fragment, {},
-                    ...[
-                        this.nodeResizer ? React.createElement(NodeResizer, ng2ReactProps(this.nodeResizer)) : null,
-                        this.nodeToolbar ? React.createElement(NodeToolbar, ng2ReactProps(this.nodeToolbar)) : null,
-                        el,
-                        ...(this.handles?.map(handle => {
-                            const props = ng2ReactProps(handle) as any;
-                            // props.onConnect = (connection) =>
-                            //     handle.onConnect.next(connection);
+        // Manual Wrapper to bypass ngx-reactify issues
+        const ManualWrapper = React.memo(({ data }: any) => {
+            const domRef = React.useRef(null);
+            const compRef = React.useRef<any>(null);
 
-                            return React.createElement(Handle, props);
-                        }) || []),
-                    ].filter(n => !!n)
-                )
-            }
-        })
+            React.useEffect(() => {
+                if (!domRef.current) return undefined;
+
+                const ref = createComponent(XYFlowNodeComponent, {
+                    environmentInjector: this.appRef.injector,
+                    elementInjector: this.injector,
+                    hostElement: domRef.current
+                });
+
+                ref.setInput('template', this.template);
+                ref.setInput('data', data);
+
+                this.appRef.attachView(ref.hostView);
+                ref.changeDetectorRef.detectChanges();
+                compRef.current = ref;
+
+                return () => {
+                    ref.destroy();
+                    compRef.current = null;
+                };
+            }, []);
+
+            React.useEffect(() => {
+                if (compRef.current) {
+                    compRef.current.setInput('data', data);
+                    compRef.current.changeDetectorRef.detectChanges();
+                }
+            }, [data]);
+
+            // Render Handles, Resizer, Toolbar
+            const handles = this.handles ? this.handles.map(handle => {
+                return React.createElement(Handle, ng2ReactProps(handle) as any);
+            }) : [];
+
+            const resizer = this.nodeResizer ? React.createElement(NodeResizer, ng2ReactProps(this.nodeResizer)) : null;
+            const toolbar = this.nodeToolbar ? React.createElement(NodeToolbar, ng2ReactProps(this.nodeToolbar)) : null;
+
+            return React.createElement(React.Fragment, {},
+                React.createElement('div', {
+                    ref: domRef,
+                    className: 'ngx-xyflow-node-wrapper',
+                    style: { width: '100%', height: '100%', display: 'block' }
+                }),
+                ...handles,
+                resizer,
+                toolbar
+            );
+        });
+
+        this.xyflow.nodeTypes[this.nodeType] = ManualWrapper;
+
+        // Force re-render of the React component to pick up the new node type
+        this.xyflow.nodeTypes = { ...this.xyflow.nodeTypes };
+        (this.xyflow as any)._render();
     }
 }

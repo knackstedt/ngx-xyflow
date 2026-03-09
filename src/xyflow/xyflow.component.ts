@@ -9,7 +9,8 @@ import {
     Output,
     SimpleChanges,
     ViewContainerRef,
-    ViewEncapsulation
+    ViewEncapsulation,
+    ChangeDetectorRef
 } from '@angular/core';
 import {
     addEdge,
@@ -28,6 +29,18 @@ import * as React from 'react';
 import { BackgroundDirective } from './background.directive';
 import { ControlsDirective } from './controls.directive';
 import { MinimapDirective } from './minimap.directive';
+
+declare global {
+    interface PromiseWithResolvers<T> {
+        promise: Promise<T>;
+        resolve: (value: T | PromiseLike<T>) => void;
+        reject: (reason?: any) => void;
+    }
+
+    interface PromiseConstructor {
+        withResolvers<T>(): PromiseWithResolvers<T>;
+    }
+}
 
 type XYFlowProps = ReactFlowProps<any, any>;
 type OverriddenProps = 'onBeforeDelete' | 'onClickConnectEnd' | 'onClickConnectStart' | 'onConnect' | 'onConnectEnd' | 'onConnectStart' | 'onDelete' | 'onEdgeClick' | 'onEdgeContextMenu' | 'onEdgeDoubleClick' | 'onEdgeMouseEnter' | 'onEdgeMouseLeave' | 'onEdgeMouseMove' | 'onEdgesChange' | 'onEdgesDelete' | 'onError' | 'onInit' | 'onMove' | 'onMoveEnd' | 'onMoveStart' | 'onNodeClick' | 'onNodeContextMenu' | 'onNodeDoubleClick' | 'onNodeDrag' | 'onNodeDragStart' | 'onNodeDragStop' | 'onNodeMouseEnter' | 'onNodeMouseLeave' | 'onNodeMouseMove' | 'onNodesChange' | 'onNodesDelete' | 'onPaneClick' | 'onPaneContextMenu' | 'onPaneMouseEnter' | 'onPaneMouseLeave' | 'onPaneMouseMove' | 'onPaneScroll' | 'onReconnect' | 'onReconnectStart' | 'onReconnectEnd' | 'onSelectionChange' | 'onSelectionContextMenu' | 'onSelectionDrag' | 'onSelectionDragStart' | 'onSelectionDragStop' | 'onSelectionEnd' | 'onSelectionStart';
@@ -240,6 +253,8 @@ export class XYFlowComponent extends ReactifyNgComponent implements XYFlowProps,
         // Overwrite the property bindings
         props.nodes = nodes;
         props.edges = edges;
+        props.nodeTypes = this.nodeTypes;
+        props.edgeTypes = this.edgeTypes;
 
 
         // Effectively outputs this:
