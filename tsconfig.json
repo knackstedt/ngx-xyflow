@@ -22,7 +22,8 @@
     "skipLibCheck": true,
     "lib": [
       "ES2022",
-      "dom"
+      "dom",
+      "ESNext"
     ]
   },
   "angularCompilerOptions": {

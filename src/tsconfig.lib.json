@@ -11,6 +11,11 @@
     "allowJs": true,
     "resolveJsonModule": true,
     "types": [],
+    "lib": [
+        "ES2022",
+        "dom",
+        "ESNext"
+    ]
   },
   "exclude": [
     "**/*.spec.ts"
