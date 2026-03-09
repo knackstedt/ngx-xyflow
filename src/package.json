@@ -1,8 +1,12 @@
 {
     "name": "ngx-xyflow",
-    "version": "0.1.1",
+    "version": "0.2.0-alpha.0",
     "repository": {
-        "url": "https://github.com/knackstedt/ngx-xyflow"
+        "url": "git+https://github.com/knackstedt/ngx-xyflow.git"
+    },
+    "publishConfig": {
+        "access": "public",
+        "provenance": true
     },
     "license": "MIT",
     "author": {
