@@ -1,4 +1,4 @@
-import {booleanAttribute, Directive, EventEmitter, Input, Output, SimpleChanges} from '@angular/core';
+import { booleanAttribute, Directive, EventEmitter, forwardRef, Inject, Input, Output, SimpleChanges } from '@angular/core';
 import { ControlProps } from '@xyflow/react';
 import { XYFlowComponent } from './xyflow.component';
 
@@ -23,7 +23,7 @@ export class ControlsDirective implements Omit<ControlProps, 'onFitView' | 'onIn
     @Output() onZoomIn = new EventEmitter<Parameters<ControlProps['onZoomIn']>>();
     @Output() onZoomOut = new EventEmitter<Parameters<ControlProps['onZoomOut']>>();
 
-    constructor(private readonly xyflow: XYFlowComponent) { }
+    constructor(@Inject(forwardRef(() => XYFlowComponent)) private readonly xyflow: XYFlowComponent) { }
     ngOnChanges(changes: SimpleChanges) {
         this.xyflow.ngOnChanges(changes);
     }

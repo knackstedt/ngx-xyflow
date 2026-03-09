@@ -3,6 +3,7 @@ import {
     Component,
     ContentChild,
     EventEmitter,
+    forwardRef,
     Input,
     NgZone,
     OnChanges,
@@ -169,9 +170,9 @@ export class XYFlowComponent extends ReactifyNgComponent implements XYFlowProps,
     @Output() onSelectionStart = new EventEmitter<[XYFlowProps['onSelectionStart']]> as any;
 
 
-    @ContentChild(BackgroundDirective) _background: BackgroundDirective;
-    @ContentChild(ControlsDirective) _controls: ControlsDirective;
-    @ContentChild(MinimapDirective) _minimap: MinimapDirective;
+    @ContentChild(forwardRef(() => BackgroundDirective)) _background: BackgroundDirective;
+    @ContentChild(forwardRef(() => ControlsDirective)) _controls: ControlsDirective;
+    @ContentChild(forwardRef(() => MinimapDirective)) _minimap: MinimapDirective;
 
 
     private _setNodes: React.Dispatch<React.SetStateAction<any[]>>;
