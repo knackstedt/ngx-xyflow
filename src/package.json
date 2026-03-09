@@ -6,7 +6,8 @@
     },
     "publishConfig": {
         "access": "public",
-        "provenance": true
+        "provenance": true,
+        "tag": "alpha"
     },
     "license": "MIT",
     "author": {
