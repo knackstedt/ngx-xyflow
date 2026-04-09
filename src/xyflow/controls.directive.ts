@@ -1,5 +1,6 @@
-import { booleanAttribute, Directive, EventEmitter, forwardRef, Inject, Input, Output, SimpleChanges } from '@angular/core';
+import { booleanAttribute, ContentChildren, Directive, EventEmitter, forwardRef, Inject, Input, Output, QueryList, SimpleChanges } from '@angular/core';
 import { ControlProps } from '@xyflow/react';
+import { ControlButtonDirective } from './control-button.directive';
 import { XYFlowComponent } from './xyflow.component';
 
 @Directive({
@@ -22,6 +23,8 @@ export class ControlsDirective implements Omit<ControlProps, 'onFitView' | 'onIn
     @Output() onInteractiveChange = new EventEmitter<Parameters<ControlProps['onInteractiveChange']>>();
     @Output() onZoomIn = new EventEmitter<Parameters<ControlProps['onZoomIn']>>();
     @Output() onZoomOut = new EventEmitter<Parameters<ControlProps['onZoomOut']>>();
+
+    @ContentChildren(ControlButtonDirective) controlButtons!: QueryList<ControlButtonDirective>;
 
     constructor(@Inject(forwardRef(() => XYFlowComponent)) private readonly xyflow: XYFlowComponent) { }
     ngOnChanges(changes: SimpleChanges) {

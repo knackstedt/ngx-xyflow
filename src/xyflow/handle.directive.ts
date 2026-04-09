@@ -1,5 +1,5 @@
-import {booleanAttribute, Directive, Input, SimpleChanges} from '@angular/core';
-import { HandleProps } from '@xyflow/react';
+import { booleanAttribute, Directive, EventEmitter, Input, Output, SimpleChanges } from '@angular/core';
+import { Connection, HandleProps } from '@xyflow/react';
 import { XYFlowComponent } from './xyflow.component';
 
 @Directive({
@@ -15,8 +15,7 @@ export class HandleDirective implements Omit<HandleProps, "position" | "onConnec
     @Input() position: 'top' | 'left' | 'right' | 'bottom';
     @Input() type: HandleProps['type'];
 
-    // @Output() onConnect = new EventEmitter<Connection>();
-    // @Output() onEdgesDelete = new EventEmitter<[XYFlowProps['onEdgesDelete']]>
+    @Output() onConnect = new EventEmitter<Connection>();
 
     constructor(private readonly xyflow: XYFlowComponent) { }
     ngOnChanges(changes: SimpleChanges) {

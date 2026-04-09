@@ -2,12 +2,14 @@ import {
     ChangeDetectorRef,
     Component,
     ContentChild,
+    ContentChildren,
     EventEmitter,
     forwardRef,
     Input,
     NgZone,
     OnChanges,
     Output,
+    QueryList,
     SimpleChanges,
     ViewContainerRef,
     ViewEncapsulation
@@ -17,18 +19,22 @@ import {
     applyEdgeChanges,
     applyNodeChanges,
     Background,
+    ControlButton,
     Controls,
     MiniMap,
+    Panel,
     ReactFlow,
     ReactFlowInstance,
     ReactFlowProps,
     ReactFlowProvider
 } from '@xyflow/react';
-import { ReactifyNgComponent } from 'ngx-reactify';
+import { ng2ReactProps, ReactifyNgComponent } from 'ngx-reactify';
 import * as React from 'react';
 import { BackgroundDirective } from './background.directive';
 import { ControlsDirective } from './controls.directive';
 import { MinimapDirective } from './minimap.directive';
+import { PanelDirective } from './panel.directive';
+import { XYFlowService } from './xyflow.service';
 
 declare global {
     interface PromiseWithResolvers<T> {
@@ -43,14 +49,15 @@ declare global {
 }
 
 type XYFlowProps = ReactFlowProps<any, any>;
-type OverriddenProps = 'onBeforeDelete' | 'onClickConnectEnd' | 'onClickConnectStart' | 'onConnect' | 'onConnectEnd' | 'onConnectStart' | 'onDelete' | 'onEdgeClick' | 'onEdgeContextMenu' | 'onEdgeDoubleClick' | 'onEdgeMouseEnter' | 'onEdgeMouseLeave' | 'onEdgeMouseMove' | 'onEdgesChange' | 'onEdgesDelete' | 'onError' | 'onInit' | 'onMove' | 'onMoveEnd' | 'onMoveStart' | 'onNodeClick' | 'onNodeContextMenu' | 'onNodeDoubleClick' | 'onNodeDrag' | 'onNodeDragStart' | 'onNodeDragStop' | 'onNodeMouseEnter' | 'onNodeMouseLeave' | 'onNodeMouseMove' | 'onNodesChange' | 'onNodesDelete' | 'onPaneClick' | 'onPaneContextMenu' | 'onPaneMouseEnter' | 'onPaneMouseLeave' | 'onPaneMouseMove' | 'onPaneScroll' | 'onReconnect' | 'onReconnectStart' | 'onReconnectEnd' | 'onSelectionChange' | 'onSelectionContextMenu' | 'onSelectionDrag' | 'onSelectionDragStart' | 'onSelectionDragStop' | 'onSelectionEnd' | 'onSelectionStart';
+type OverriddenProps = 'onClickConnectEnd' | 'onClickConnectStart' | 'onConnect' | 'onConnectEnd' | 'onConnectStart' | 'onDelete' | 'onEdgeClick' | 'onEdgeContextMenu' | 'onEdgeDoubleClick' | 'onEdgeMouseEnter' | 'onEdgeMouseLeave' | 'onEdgeMouseMove' | 'onEdgesChange' | 'onEdgesDelete' | 'onError' | 'onInit' | 'onMove' | 'onMoveEnd' | 'onMoveStart' | 'onNodeClick' | 'onNodeContextMenu' | 'onNodeDoubleClick' | 'onNodeDrag' | 'onNodeDragStart' | 'onNodeDragStop' | 'onNodeMouseEnter' | 'onNodeMouseLeave' | 'onNodeMouseMove' | 'onNodesChange' | 'onNodesDelete' | 'onPaneClick' | 'onPaneContextMenu' | 'onPaneMouseEnter' | 'onPaneMouseLeave' | 'onPaneMouseMove' | 'onPaneScroll' | 'onReconnect' | 'onReconnectStart' | 'onReconnectEnd' | 'onSelectionChange' | 'onSelectionContextMenu' | 'onSelectionDrag' | 'onSelectionDragStart' | 'onSelectionDragStop' | 'onSelectionEnd' | 'onSelectionStart' | 'onViewportChange';
 type InheritedXYFlowProps = Omit<XYFlowProps, OverriddenProps>;
 
 @Component({
     selector: 'ngx-xyflow',
     template: '',
     styleUrls: ['../../node_modules/@xyflow/react/dist/style.css'],
-    encapsulation: ViewEncapsulation.None
+    encapsulation: ViewEncapsulation.None,
+    providers: [XYFlowService]
 })
 export class XYFlowComponent extends ReactifyNgComponent implements XYFlowProps, OnChanges {
 
@@ -61,11 +68,41 @@ export class XYFlowComponent extends ReactifyNgComponent implements XYFlowProps,
     @Output("edgesChange") _edgesChange = new EventEmitter<XYFlowProps['edges']>();
 
     @Input() defaultEdgeOptions: XYFlowProps['defaultEdgeOptions'];
+    @Input() defaultNodes: XYFlowProps['defaultNodes'];
+    @Input() defaultEdges: XYFlowProps['defaultEdges'];
 
-    nodeTypes: any = {}; //XYFlowProps['nodeTypes'] = {};
+    // Dimensions
+    @Input() width: XYFlowProps['width'];
+    @Input() height: XYFlowProps['height'];
+
+    // Viewport
+    @Input() viewport: XYFlowProps['viewport'];
+    @Input() defaultViewport: XYFlowProps['defaultViewport'];
+
+    // Color and debug
+    @Input() colorMode: XYFlowProps['colorMode'];
+    @Input() debug: XYFlowProps['debug'];
+
+    // Thresholds
+    @Input() paneClickDistance: XYFlowProps['paneClickDistance'];
+    @Input() nodeClickDistance: XYFlowProps['nodeClickDistance'];
+    @Input() nodeDragThreshold: XYFlowProps['nodeDragThreshold'];
+
+    // Auto pan settings
+    @Input() autoPanSpeed: XYFlowProps['autoPanSpeed'];
+
+    /** Custom node types (alternatively use the ngx-xyflow-node directive) */
+    nodeTypes: any = {};
+
+    /** Custom edge types (alternatively use the ngx-xyflow-edge directive) */
     edgeTypes: XYFlowProps['edgeTypes'] = {};
 
     instance: ReactFlowInstance;
+
+    /** Expose service for programmatic control via ViewChild */
+    get flow(): XYFlowService {
+        return this.xyflowService;
+    }
 
     @Input() connectionLineType: XYFlowProps['connectionLineType'];
     @Input() connectionLineStyle: XYFlowProps['connectionLineStyle'];
@@ -92,7 +129,6 @@ export class XYFlowComponent extends ReactifyNgComponent implements XYFlowProps,
     @Input() panOnDrag: XYFlowProps['panOnDrag'];
     @Input() minZoom: XYFlowProps['minZoom'];
     @Input() maxZoom: XYFlowProps['maxZoom'];
-    @Input() defaultViewport: XYFlowProps['defaultViewport'];
     @Input() translateExtent: XYFlowProps['translateExtent'];
     @Input() preventScrolling: XYFlowProps['preventScrolling'];
     @Input() nodeExtent: XYFlowProps['nodeExtent'];
@@ -121,7 +157,6 @@ export class XYFlowComponent extends ReactifyNgComponent implements XYFlowProps,
     // `as any` casting for the Output properties to inherit the description from the xyflow JSDOC comments.
     // As of now I don't know of a better way to replace the types while keeping the comments.
 
-    // @Output() onBeforeDelete = new EventEmitter<[XYFlowProps['onBeforeDelete']]> as any;
     @Output() onClickConnectEnd = new EventEmitter<[XYFlowProps['onClickConnectEnd']]> as any;
     @Output() onClickConnectStart = new EventEmitter<[XYFlowProps['onClickConnectStart']]> as any;
     @Output() onConnect = new EventEmitter<[XYFlowProps['onConnect']]> as any;
@@ -168,11 +203,12 @@ export class XYFlowComponent extends ReactifyNgComponent implements XYFlowProps,
     @Output() onSelectionDragStop = new EventEmitter<[XYFlowProps['onSelectionDragStop']]> as any;
     @Output() onSelectionEnd = new EventEmitter<[XYFlowProps['onSelectionEnd']]> as any;
     @Output() onSelectionStart = new EventEmitter<[XYFlowProps['onSelectionStart']]> as any;
-
+    @Output() onViewportChange = new EventEmitter<[NonNullable<XYFlowProps['onViewportChange']>]> as any;
 
     @ContentChild(forwardRef(() => BackgroundDirective)) _background: BackgroundDirective;
     @ContentChild(forwardRef(() => ControlsDirective)) _controls: ControlsDirective;
     @ContentChild(forwardRef(() => MinimapDirective)) _minimap: MinimapDirective;
+    @ContentChildren(forwardRef(() => PanelDirective)) _panels: QueryList<PanelDirective>;
 
 
     private _setNodes: React.Dispatch<React.SetStateAction<any[]>>;
@@ -209,10 +245,22 @@ export class XYFlowComponent extends ReactifyNgComponent implements XYFlowProps,
         minimapProps.onNodeClick = () =>
             this._minimap.onNodeClick.emit();
 
+        const panelElements = this._panels?.map(panel =>
+            React.createElement(Panel, getProps(panel), null)
+        ) || [];
+
+        // Render custom control buttons as children of Controls
+        const controlButtonElements = this._controls?.controlButtons?.map(btn => {
+            const btnProps = ng2ReactProps(btn) as any;
+            btnProps.onClick = () => btn.onClick.emit();
+            return React.createElement(ControlButton, btnProps);
+        }) || [];
+
         const reactDirectives = [
             this._background ? React.createElement(Background, getProps(this._background)) : null,
-            this._controls ? React.createElement(Controls, controlProps) : null,
+            this._controls ? React.createElement(Controls, controlProps, ...controlButtonElements) : null,
             this._minimap ? React.createElement(MiniMap, minimapProps) : null,
+            ...panelElements
         ].filter(r => r);
 
         const [nodes, setNodes] = React.useState(this._nodes);
@@ -234,7 +282,6 @@ export class XYFlowComponent extends ReactifyNgComponent implements XYFlowProps,
         );
         props.onEdgesChange = React.useCallback(
             (changes) => setEdges((eds) => {
-                console.log("SED");
                 const edges = applyEdgeChanges(changes, eds);
                 this._edgesChange.emit(this._edges = edges);
                 return edges;
@@ -247,6 +294,10 @@ export class XYFlowComponent extends ReactifyNgComponent implements XYFlowProps,
                 this._edgesChange.emit(this._edges = edges);
                 return edges;
             }),
+            []
+        );
+        props.onViewportChange = React.useCallback(
+            (viewport) => this.onViewportChange.emit(viewport),
             []
         );
 
@@ -270,6 +321,8 @@ export class XYFlowComponent extends ReactifyNgComponent implements XYFlowProps,
             React.createElement(ReactFlow, {
                 ...props as any, onInit: rf => {
                     this.instance = rf;
+                    this.xyflowService.setInstance(rf);
+                    this.onInit.emit(rf);
                 }
             },
                 ...reactDirectives
@@ -280,7 +333,8 @@ export class XYFlowComponent extends ReactifyNgComponent implements XYFlowProps,
     constructor(
         ngContainer: ViewContainerRef,
         ngZone: NgZone,
-        cdr: ChangeDetectorRef
+        cdr: ChangeDetectorRef,
+        private readonly xyflowService: XYFlowService
     ) {
         super(ngContainer, ngZone);
         (this as any).ngChangeDetector = cdr;
