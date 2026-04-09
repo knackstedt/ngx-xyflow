@@ -1,49 +1,98 @@
-<button style="position: absolute;z-index: 10" (click)="addNode()">Add node</button>
+<div class="toolbar">
+    <button (click)="addNode()">Add node</button>
+    <button (click)="zoomIn()">Zoom In</button>
+    <button (click)="zoomOut()">Zoom Out</button>
+    <button (click)="fitView()">Fit View</button>
+    <button (click)="setCenter()">Set Center</button>
+    <button (click)="toggleColorMode()">Toggle {{colorMode}} Mode</button>
+    <button (click)="toggleSecondaryFlow()">{{showSecondaryFlow ? 'Hide' : 'Show'}} Secondary Flow</button>
+</div>
 
+<!-- Main Flow -->
 <ngx-xyflow
+    #mainFlow
+    style="height: 70vh; width: 100%;"
     [(nodes)]="nodes"
     [(edges)]="edges"
+    [colorMode]="colorMode"
+    [fitView]="true"
+    [snapToGrid]="true"
+    [snapGrid]="[20, 20]"
+    [debug]="false"
+
+    (onConnect)="onConnect($event)"
+    (onViewportChange)="onViewportChange($event)"
+    (onNodeClick)="test('onNodeClick: ' + $event.id)"
+    (onEdgeClick)="test('onEdgeClick: ' + $event.id)"
+    (onPaneClick)="test('onPaneClick')"
 >
+    <!-- Background with variant -->
     <ngx-xyflow-background
+        [variant]="$any(colorMode === 'dark' ? 'dots' : 'lines')"
         color="pink"
         [gap]="20"
         [size]="2"
     />
 
+    <!-- Controls with custom button -->
     <ngx-xyflow-controls
         (onFitView)="test('onFitView')"
         (onInteractiveChange)="test('onInteractiveChange ' + $event)"
         (onZoomIn)="test('onZoomIn')"
         (onZoomOut)="test('onZoomOut')"
-    />
+    >
+        <ngx-xyflow-control-button
+            title="Custom Action"
+            (onClick)="test('Custom control button clicked')"
+        >
+            🔧
+        </ngx-xyflow-control-button>
+    </ngx-xyflow-controls>
 
+    <!-- Minimap -->
     <ngx-xyflow-minimap
         (onClick)="test('onMinimapClick')"
         (onNodeClick)="test('onMinimapNodeClick')"
     />
 
+    <!-- Panel for extra controls -->
+    <ngx-xyflow-panel
+        position="top-right"
+        class="custom-panel"
+    >
+        <div style="background: rgba(255,255,255,0.9); padding: 10px; border-radius: 5px;">
+            <strong>Flow Stats</strong>
+            <p>Nodes: {{nodes.length}}</p>
+            <p>Edges: {{edges.length}}</p>
+        </div>
+    </ngx-xyflow-panel>
+
+    <!-- Custom Node with resizer and toolbar -->
     <ngx-xyflow-node
         nodeType="selectorNode"
         (contextmenu)="test('customNodeClick')"
     >
-
-        <!-- <ngx-xyflow-node-resizer
+        <!-- Node Resizer enabled -->
+        <ngx-xyflow-node-resizer
             [minWidth]="100"
             [minHeight]="50"
-        /> -->
-
-        <!-- <ngx-xyflow-node-toolbar
             [isVisible]="true"
-            position="left"
+            [keepAspectRatio]="false"
+        />
+
+        <!-- Node Toolbar enabled -->
+        <ngx-xyflow-node-toolbar
+            [isVisible]="true"
+            position="top"
         >
-            <button>cut</button>
-            <button>copy</button>
-            <button>paste</button>
-        </ngx-xyflow-node-toolbar> -->
+            <button (click)="test('Cut clicked')">✂️</button>
+            <button (click)="test('Copy clicked')">📋</button>
+            <button (click)="test('Paste clicked')">📌</button>
+        </ngx-xyflow-node-toolbar>
 
         <ng-template let-data>
-            <div class="custom_node" >
-                {{data.label}}
+            <div class="custom_node" [style.background]="data.color">
+                <strong>{{data.label}}</strong>
             </div>
         </ng-template>
 
@@ -51,18 +100,54 @@
             type="target"
             position="left"
             [isConnectable]="true"
+            (onConnect)="onHandleConnect($event)"
         />
 
         <ngx-xyflow-handle
             type="source"
             position="right"
             id="a"
+            [isConnectable]="true"
         />
 
         <ngx-xyflow-handle
             type="source"
             position="right"
             id="b"
+            [isConnectable]="true"
         />
     </ngx-xyflow-node>
+
+    <!-- Custom Edge -->
+    <ngx-xyflow-edge edgeType="customEdge">
+        <ng-template let-props>
+            <div class="custom-edge" (click)="test('Edge clicked: ' + props.id)">
+                <button
+                    style="padding: 2px 8px; font-size: 10px;"
+                    (click)="deleteEdge(props.id); $event.stopPropagation()"
+                >
+                    ✕
+                </button>
+            </div>
+        </ng-template>
+    </ngx-xyflow-edge>
 </ngx-xyflow>
+
+<!-- Secondary Flow (Multi-flow demo) -->
+@if (showSecondaryFlow) {
+    <div style="margin-top: 20px; border-top: 2px solid #ccc; padding-top: 10px;">
+        <h3>Secondary Flow (Independent Instance)</h3>
+        <ngx-xyflow
+            #secondaryFlow
+            style="height: 30vh; width: 100%;"
+            [nodes]="secondaryNodes"
+            [edges]="secondaryEdges"
+            [colorMode]="'dark'"
+            [fitView]="true"
+        >
+            <ngx-xyflow-background [variant]="$any('dots')" />
+            <ngx-xyflow-controls />
+            <ngx-xyflow-minimap />
+        </ngx-xyflow>
+    </div>
+}

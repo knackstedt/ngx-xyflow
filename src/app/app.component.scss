@@ -1,10 +1,47 @@
 
 
+.toolbar {
+    position: absolute;
+    z-index: 100;
+    top: 10px;
+    left: 10px;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 10px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.toolbar button {
+    padding: 8px 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background: white;
+    cursor: pointer;
+    font-size: 12px;
+}
+
+.toolbar button:hover {
+    background: #f0f0f0;
+}
+
 .custom_node {
     background-color: #ccc;
     border: 2px solid red;
     border-radius: 6px;
-
     padding: 12px;
     min-width: 150px;
+    text-align: center;
+}
+
+.custom-edge {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.custom-panel {
+    font-family: sans-serif;
 }
