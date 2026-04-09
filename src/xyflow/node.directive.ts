@@ -14,16 +14,15 @@ import {
     QueryList,
     SimpleChanges,
     TemplateRef,
-    ViewChildren,
     createComponent
 } from '@angular/core';
 import { Handle, NodeResizer, NodeToolbar } from '@xyflow/react';
+import { ng2ReactProps } from 'ngx-reactify';
 import * as React from 'react';
 import { HandleDirective } from './handle.directive';
-import { XYFlowComponent } from './xyflow.component';
 import { NodeResizerDirective } from './node-resizer.directive';
 import { NodeToolbarDirective } from './node-toolbar.directive';
-import { ng2ReactProps } from 'ngx-reactify';
+import { XYFlowComponent } from './xyflow.component';
 
 
 @Component({
@@ -169,10 +168,9 @@ export class NodeDirective {
             );
         });
 
-        this.xyflow.nodeTypes[this.nodeType] = ManualWrapper;
+        this.xyflow.templateNodeTypes[this.nodeType] = ManualWrapper;
 
         // Force re-render of the React component to pick up the new node type
-        this.xyflow.nodeTypes = { ...this.xyflow.nodeTypes };
         (this.xyflow as any)._render();
     }
 }

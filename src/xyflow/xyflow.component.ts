@@ -92,10 +92,24 @@ export class XYFlowComponent extends ReactifyNgComponent implements XYFlowProps,
     @Input() autoPanSpeed: XYFlowProps['autoPanSpeed'];
 
     /** Custom node types (alternatively use the ngx-xyflow-node directive) */
-    nodeTypes: any = {};
+    @Input("nodeTypes")
+    inputNodeTypes: any = {};
+    // Custom node types defined via template
+    templateNodeTypes: any = {};
+
+    get nodeTypes(): any {
+        return { ...this.inputNodeTypes, ...this.templateNodeTypes };
+    }
 
     /** Custom edge types (alternatively use the ngx-xyflow-edge directive) */
-    edgeTypes: XYFlowProps['edgeTypes'] = {};
+    @Input("edgeTypes")
+    inputEdgeTypes: XYFlowProps['edgeTypes'] = {};
+    // Custom edge types defined via template
+    templateEdgeTypes: XYFlowProps['edgeTypes'] = {};
+
+    get edgeTypes(): XYFlowProps['edgeTypes'] {
+        return { ...this.inputEdgeTypes, ...this.templateEdgeTypes };
+    }
 
     instance: ReactFlowInstance;
 

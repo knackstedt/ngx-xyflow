@@ -103,10 +103,9 @@ export class EdgeDirective {
             );
         });
 
-        this.xyflow.edgeTypes[this.edgeType] = ManualWrapper;
+        this.xyflow.templateEdgeTypes[this.edgeType] = ManualWrapper;
 
         // Force re-render of the React component to pick up the new edge type
-        this.xyflow.edgeTypes = { ...this.xyflow.edgeTypes };
         (this.xyflow as any)._render();
     }
 }
