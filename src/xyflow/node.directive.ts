@@ -32,7 +32,7 @@ import { XYFlowComponent } from './xyflow.component';
             @if(template) {
                 <ng-container
                     [ngTemplateOutlet]="template"
-                    [ngTemplateOutletContext]="{ '$implicit': data }"
+                    [ngTemplateOutletContext]="{ '$implicit': node, 'node': node, 'data': data }"
                 />
             }
         </div>
@@ -115,7 +115,8 @@ export class NodeDirective {
         }
 
         // Manual Wrapper to bypass ngx-reactify issues
-        const ManualWrapper = React.memo(({ data }: any) => {
+        const ManualWrapper = React.memo((props: any) => {
+            const { data } = props;
             const domRef = React.useRef(null);
             const compRef = React.useRef<any>(null);
 
@@ -130,6 +131,7 @@ export class NodeDirective {
 
                 ref.setInput('template', this.template);
                 ref.setInput('data', data);
+                ref.setInput('node', props);
 
                 this.appRef.attachView(ref.hostView);
                 ref.changeDetectorRef.detectChanges();
@@ -144,9 +146,10 @@ export class NodeDirective {
             React.useEffect(() => {
                 if (compRef.current) {
                     compRef.current.setInput('data', data);
+                    compRef.current.setInput('node', props);
                     compRef.current.changeDetectorRef.detectChanges();
                 }
-            }, [data]);
+            }, [props]);
 
             // Render Handles, Resizer, Toolbar
             const handles = this.handles ? this.handles.map(handle => {
